@@ -12,7 +12,7 @@ Steps:
 5. Extract account numbers
 6. Extract time expressions
 """
-
+print("Script started")
 import re
 import spacy
 from bs4 import BeautifulSoup
