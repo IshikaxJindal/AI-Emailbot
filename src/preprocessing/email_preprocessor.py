@@ -1,1 +1,68 @@
+nlp = spacy.load("en_core_web_sm")
+import re
+import spacy
+from bs4 import BeautifulSoup
+def remove_html(text):
+    soup = BeautifulSoup(text, "html.parser")
+    return soup.get_text()
+  def remove_reply_chain(text):
+    parts = re.split(r'On .* wrote:', text)
+    return parts[0]
+    def remove_signature(text):
 
+    patterns = ["thanks", "regards", "best", "sincerely"]
+
+    for pattern in patterns:
+        text = re.split(pattern, text, flags=re.IGNORECASE)[0]
+
+    return text
+    def normalize_text(text):
+
+    text = text.lower()
+
+    text = re.sub(r'\n+', ' ', text)
+
+    text = re.sub(r'\s+', ' ', text)
+
+    return text.strip()
+    def extract_account_number(text):
+
+    match = re.search(r'\b\d{6,12}\b', text)
+
+    if match:
+        return match.group()
+
+    return None
+    def extract_dates(text):
+
+    doc = nlp(text)
+
+    dates = []
+
+    for ent in doc.ents:
+        if ent.label_ == "DATE":
+            dates.append(ent.text)
+
+    return dates
+    
+    def preprocess_email(sender, subject, body):
+
+    body = remove_html(body)
+
+    body = remove_reply_chain(body)
+
+    body = remove_signature(body)
+
+    body = normalize_text(body)
+
+    account_number = extract_account_number(body)
+
+    dates = extract_dates(body)
+
+    return {
+        "sender": sender,
+        "subject": subject,
+        "clean_body": body,
+        "account_number": account_number,
+        "dates": dates
+    }
