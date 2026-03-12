@@ -1,3 +1,17 @@
+"""Email Preprocessing Module
+
+Responsible for cleaning and structuring raw email input before
+passing it to the intent validation layer.
+
+Steps:
+1. Remove HTML
+2. Remove reply chains
+3. Remove signatures
+4. Normalize text
+5. Extract account numbers
+6. Extract time expressions
+"""
+
 nlp = spacy.load("en_core_web_sm")
 import re
 import spacy
