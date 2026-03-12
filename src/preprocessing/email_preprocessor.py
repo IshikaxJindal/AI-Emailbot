@@ -85,6 +85,26 @@ def remove_html(text):
 
     return None
 
+if __name__ == "__main__":
+
+    email_body = """
+    Hi,
+
+    Please send my bank statement for the last 3 months.
+    Account number 12345678
+
+    Thanks
+    Rahul
+    """
+
+    result = preprocess_email(
+        sender="rahul@gmail.com",
+        subject="Bank Statement Request",
+        body=email_body
+    )
+
+    print(result)
+
 
     
    
