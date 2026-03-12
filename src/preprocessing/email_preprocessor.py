@@ -20,7 +20,7 @@ def remove_html(text):
     soup = BeautifulSoup(text, "html.parser")
     return soup.get_text()
     
-  def remove_reply_chain(text):
+    def remove_reply_chain(text):
     parts = re.split(r'On .* wrote:', text)
     return parts[0]
     def remove_signature(text):
@@ -41,5 +41,50 @@ def remove_html(text):
     text = re.sub(r'\s+', ' ', text)
 
     return text.strip()
+    
+    
+    def extract_dates(text):
+
+    doc = nlp(text)
+
+    dates = []
+
+    for ent in doc.ents:
+        if ent.label_ == "DATE":
+            dates.append(ent.text)
+
+    return dates
+    
+    def preprocess_email(sender, subject, body):
+
+    body = remove_html(body)
+
+    body = remove_reply_chain(body)
+
+    body = remove_signature(body)
+
+    body = normalize_text(body)
+
+    account_number = extract_account_number(body)
+
+    dates = extract_dates(body)
+
+    return {
+        "sender": sender,
+        "subject": subject,
+        "clean_body": body,
+        "account_number": account_number,
+        "dates": dates
+    }
+    def extract_account_number(text):
+
+    match = re.search(r'\b\d{6,12}\b', text)
+
+    if match:
+        return match.group()
+
+    return None
+
+
     
    
