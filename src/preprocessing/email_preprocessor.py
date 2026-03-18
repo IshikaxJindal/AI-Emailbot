@@ -105,7 +105,7 @@ def preprocess_email(text, correlation_id=None):
     time_entities = extract_time_expressions(text)
 
     return {
-        "correlationId": correlation_id,  # 🔥 attach for downstream
+        "correlationId": correlation_id,  #  attach for downstream
         "clean_text": text,
         "time_entities": time_entities
     }
