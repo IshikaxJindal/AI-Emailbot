@@ -1,10 +1,13 @@
 """
-EMAIL LISTENER SERVICE (UPDATED WITH UUID ONLY)
+EMAIL LISTENER SERVICE (UPDATED WITH UUID + PREPROCESSING INTEGRATION)
 """
 
 from fastapi import FastAPI, Request
 from fastapi.responses import PlainTextResponse
 from uuid import uuid4
+
+#  Import your preprocessing function
+from src.preprocessing.email_preprocessor import preprocess_email
 
 
 # Create FastAPI application
@@ -35,14 +38,13 @@ async def webhook(request: Request):
     try:
         data = await request.json()
 
-        #  STEP 1: Generate UUID at ENTRY POINT
+        # 🔥 STEP 1: Generate UUID at ENTRY POINT
         correlation_id = str(uuid4())
 
-        # (For now just print to verify flow)
         print("Correlation ID:", correlation_id)
         print("Webhook received:", data)
 
-        #  STEP 2: Pass UUID to next layer
+        # 🔥 STEP 2: Pass UUID forward
         await process_email_notification(data, correlation_id)
 
     except Exception as e:
@@ -56,30 +58,18 @@ async def webhook(request: Request):
 # ---------------------------------------------------------
 async def process_email_notification(data, correlation_id):
 
-    # Placeholder for fetching actual email later
     print("Processing with ID:", correlation_id)
 
+    # Placeholder (replace later with Microsoft Graph fetch)
     email = {
         "subject": "Dummy subject",
         "body": "This is a test email",
         "from": "user@example.com"
     }
 
-    #  Pass correlationId forward
-    cleaned = preprocess_email(email, correlation_id)
+    # 🔥 CORRECT: pass ONLY body + correlationId
+    processed = preprocess_email(email["body"], correlation_id)
 
-    return cleaned
+    print("Processed Output:", processed)
 
-
-# ---------------------------------------------------------
-# PREPROCESSING LAYER
-# ---------------------------------------------------------
-def preprocess_email(email, correlation_id):
-
-    cleaned_text = email["body"].lower().strip()
-
-    # (For now just print to verify)
-    print("Preprocessed with ID:", correlation_id)
-    print("Cleaned:", cleaned_text)
-
-    return cleaned_text
+    return processed
