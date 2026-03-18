@@ -58,7 +58,7 @@ async def webhook(request: Request):
 # ---------------------------------------------------------
 async def process_email_notification(data, correlation_id):
 
-    print("Processing with ID:", correlation_id)
+    print(f"[Listener] ID={correlation_id} received webhook")
 
     # Placeholder (replace later with Microsoft Graph fetch)
     email = {
