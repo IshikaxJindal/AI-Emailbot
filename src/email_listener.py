@@ -38,13 +38,13 @@ async def webhook(request: Request):
     try:
         data = await request.json()
 
-        # 🔥 STEP 1: Generate UUID at ENTRY POINT
+        #  STEP 1: Generate UUID at ENTRY POINT
         correlation_id = str(uuid4())
 
         print("Correlation ID:", correlation_id)
         print("Webhook received:", data)
 
-        # 🔥 STEP 2: Pass UUID forward
+        #  STEP 2: Pass UUID forward
         await process_email_notification(data, correlation_id)
 
     except Exception as e:
@@ -67,7 +67,7 @@ async def process_email_notification(data, correlation_id):
         "from": "user@example.com"
     }
 
-    # 🔥 CORRECT: pass ONLY body + correlationId
+    #  CORRECT: pass ONLY body + correlationId
     processed = preprocess_email(email["body"], correlation_id)
 
     print("Processed Output:", processed)
