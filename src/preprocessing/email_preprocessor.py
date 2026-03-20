@@ -4,118 +4,124 @@ Email Preprocessing Module
 Responsible for cleaning and structuring raw email input before
 passing it to the intent validation layer.
 
-Steps:
+Pipeline:
 1. Remove HTML
 2. Remove reply chains
-3. Remove signatures
-4. Normalize text
-5. Extract account numbers
-6. Extract time expressions
+3. Remove email addresses
+4. Remove signatures
+5. Remove greetings
+6. Remove polite phrases
+7. Remove punctuation
+8. Normalize text
+9. Extract time expressions
 """
-print("Script started")
+
 import re
 import spacy
 from bs4 import BeautifulSoup
 
-# Load NLP model
+# Load spaCy model
 nlp = spacy.load("en_core_web_sm")
 
 
-# Remove HTML tags
 def remove_html(text):
+    """Remove HTML tags."""
     soup = BeautifulSoup(text, "html.parser")
     return soup.get_text()
 
 
-# Remove reply chain from previous emails
 def remove_reply_chain(text):
+    """Remove previous email threads."""
     parts = re.split(r'On .* wrote:', text)
     return parts[0]
 
 
-# Remove email signatures
+def remove_email_addresses(text):
+    """Remove email addresses."""
+    return re.sub(r'\S+@\S+', '', text)
+
+
 def remove_signature(text):
+    """Remove signatures appearing at the end."""
+    return re.sub(
+        r'(thanks|regards|best|sincerely)[\s\S]*$',
+        '',
+        text,
+        flags=re.IGNORECASE
+    )
 
-    patterns = ["thanks", "regards", "best", "sincerely"]
 
-    for pattern in patterns:
-        text = re.split(pattern, text, flags=re.IGNORECASE)[0]
+def remove_greeting(text):
+    """Remove greetings at the beginning."""
+    return re.sub(
+        r'^(hi|hello|dear|hi team|dear team|dear sir|dear madam)\s+',
+        '',
+        text,
+        flags=re.IGNORECASE
+    )
+
+
+def remove_polite_phrases(text):
+    """Remove unnecessary polite phrases."""
+    phrases = [
+        r"ill be highly obliged",
+        r"i'll be highly obliged",
+        r"i will be highly obliged",
+        r"i would be grateful",
+        r"kindly"
+    ]
+
+    for phrase in phrases:
+        text = re.sub(phrase, '', text, flags=re.IGNORECASE)
 
     return text
 
 
-# Normalize text
-def normalize_text(text):
+def remove_punctuation(text):
+    """Remove punctuation marks."""
+    return re.sub(r'[^\w\s]', '', text)
 
+
+def normalize_text(text):
+    """Normalize whitespace and lowercase."""
     text = text.lower()
     text = re.sub(r'\n+', ' ', text)
     text = re.sub(r'\s+', ' ', text)
-
     return text.strip()
 
 
-# Extract account number
-def extract_account_number(text):
-
-    match = re.search(r'\b\d{6,12}\b', text)
-
-    if match:
-        return match.group()
-
-    return None
-
-
-# Extract date expressions using spaCy
-def extract_dates(text):
-
+def extract_time_expressions(text):
+    """Extract time expressions using spaCy."""
     doc = nlp(text)
 
-    dates = []
+    times = []
 
     for ent in doc.ents:
-        if ent.label_ == "DATE":
-            dates.append(ent.text)
+        if ent.label_ in ["DATE", "TIME"]:
+            times.append(ent.text)
 
-    return dates
+    return times
 
 
-# Main preprocessing pipeline
-def preprocess_email(sender, subject, body):
+def preprocess_email(text):
+    """Main preprocessing pipeline."""
 
-    body = remove_html(body)
-    body = remove_reply_chain(body)
-    body = remove_signature(body)
-    body = normalize_text(body)
+    text = remove_html(text)
+    text = remove_reply_chain(text)
+    text = remove_email_addresses(text)
+    text = remove_signature(text)
+    text = remove_punctuation(text)
+    text = normalize_text(text)
 
-    account_number = extract_account_number(body)
-    dates = extract_dates(body)
+    # Remove greeting AFTER normalization
+    text = remove_greeting(text)
+
+    # Remove polite phrases
+    text = remove_polite_phrases(text)
+
+    time_entities = extract_time_expressions(text)
 
     return {
-        "sender": sender,
-        "subject": subject,
-        "clean_body": body,
-        "account_number": account_number,
-        "dates": dates
+        "clean_text": text,
+        "time_entities": time_entities
     }
-
-
-# Test block
-if __name__ == "__main__":
-
-    email_body = """
-    Hi,
-
-    Please send my bank statement for the last 3 months.
-    Account number 12345678
-
-    Thanks
-    Rahul
-    """
-
-    result = preprocess_email(
-        sender="rahul@gmail.com",
-        subject="Bank Statement Request",
-        body=email_body
-    )
-
-    print(result)
