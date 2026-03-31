@@ -51,11 +51,11 @@ def process_email(email_data, db, event_id):
     try:
         print(f"[{event_id}] Processing started")
 
-        # 🔥 LOG PROCESSING
+        # LOG PROCESSING
         db.add(ProcessingLog(event_id=event_id, status="PROCESSING"))
         db.commit()
 
-        # 🔥 STEP 1: PREPROCESSING
+        # STEP 1: PREPROCESSING
         result = preprocess_email(email_data["body"])
 
         clean_text = result["clean_text"]
@@ -64,7 +64,7 @@ def process_email(email_data, db, event_id):
         print(f"[{event_id}] Clean text:", clean_text)
         print(f"[{event_id}] Time entities:", entities)
 
-        # 🔥 STEP 2: INTENT CLASSIFICATION (NEW)
+        # STEP 2: INTENT CLASSIFICATION (NEW)
         intent_result = process_intent(
             event_id=event_id,
             clean_text=clean_text,
@@ -80,23 +80,23 @@ def process_email(email_data, db, event_id):
 
         print(f"[{event_id}] Intent Result:", intent_result)
 
-        # 🔥 STEP 3: STORE PREPROCESSED DATA (existing)
+        # STEP 3: STORE PREPROCESSED DATA (existing)
         db.add(Email(
             event_id=event_id,
             clean_text=clean_text,
             entities=entities
         ))
 
-        # 🔥 (OPTIONAL BUT RECOMMENDED) STORE INTENT RESULT
+        # (OPTIONAL BUT RECOMMENDED) STORE INTENT RESULT
         # For now just print — later we’ll create a new table
 
-        # 🔥 SUCCESS LOG
+        # SUCCESS LOG
         db.add(ProcessingLog(event_id=event_id, status="SUCCESS"))
         db.commit()
 
         print(f"[{event_id}] Pipeline success")
 
-        # 🔥 RETURN RESPONSE (IMPORTANT FOR SWAGGER)
+        # RETURN RESPONSE (IMPORTANT FOR SWAGGER)
         return intent_result
 
     except Exception as e:

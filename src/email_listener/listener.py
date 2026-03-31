@@ -76,6 +76,8 @@
 # #
 # #     return {"message": "Processing done"}
 
+from dotenv import load_dotenv
+load_dotenv()
 from fastapi import FastAPI, Body, Depends
 from sqlalchemy.orm import Session
 import uuid
