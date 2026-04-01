@@ -15,7 +15,7 @@ ALLOWED_ACTIONS = {
 ALLOWED_PRIORITY = {"LOW", "MEDIUM", "HIGH"}
 
 
-# 🔥 Intent mapping (VERY IMPORTANT)
+
 INTENT_MAP = {
     "BALANCE_QUERY": "GET_BALANCE",
     "STATEMENT_QUERY": "GET_STATEMENT",
@@ -36,7 +36,7 @@ def validate_input(data):
     priority = action_data.get("priority")
     requires_action = action_data.get("blocking")
 
-    # 🔥 Normalize intent
+  
     intent = INTENT_MAP.get(intent, intent)
     intent_data["type"] = intent  # update in-place
 
