@@ -5,46 +5,46 @@ from controller import process_request
 
 # ✅ Test 1: Valid balance request
 data1 = {
-    "event_id": "1",
-    "intents": [{"type": "BALANCE_QUERY", "confidence": 0.95}],
-    "entities": {},
-    "actions": [{"action_type": "FETCH_BALANCE", "priority": "HIGH", "blocking": True}],
-    "meta": {}
+    'event_id': 't2',
+    'intents': [{'type': 'GET_STATEMENT', 'confidence': 0.9}],
+    'entities': {'duration': {'value': 4, 'unit': 'months'}},
+    'actions': [{'action_type': 'FETCH_BANK_STATEMENT', 'priority': 'HIGH', 'blocking': True}],
+    'meta': {'source': 'rule_based', 'processed_at': '2026-04-01T10:01:00'}
 }
 
 
 data2 = {
-    'event_id': '2',
-    'intents': [{'type': 'BALANCE_QUERY', 'confidence': 0.4}],
+    'event_id': 't3',
+    'intents': [{'type': 'GET_STATEMENT', 'confidence': 0.92}],
     'entities': {},
-    'actions': [{'action_type': 'FETCH_BALANCE', 'priority': 'HIGH', 'blocking': True}],
-    'meta': {'source': 'rule_based', 'processed_at': '2026-03-26T12:21:15'}
+    'actions': [{'action_type': 'FETCH_BANK_STATEMENT', 'priority': 'HIGH', 'blocking': True}],
+    'meta': {'source': 'rule_based', 'processed_at': '2026-04-01T10:02:00'}
 }
 
 data3 = {
-    "event_id": "3",
-    "intents": [{"type": "BALANCE_QUERY", "confidence": 0.7}],
-    "entities": {},
-    "actions": [{"action_type": "FETCH_BALANCE", "priority": "HIGH", "blocking": True}],
-    "meta": {}
+    'event_id': 't4',
+    'intents': [{'type': 'BALANCE_QUERY', 'confidence': 0.7}],
+    'entities': {},
+    'actions': [{'action_type': 'FETCH_BALANCE', 'priority': 'HIGH', 'blocking': True}],
+    'meta': {}
 }
 
 # ⚠️ Test 4: Needs clarification
 data4 = {
-    "event_id": "4",
-    "intents": [{"type": "BALANCE_QUERY", "confidence": 0.9}],
-    "entities": {},
-    "actions": [{"action_type": "FETCH_BALANCE", "priority": "HIGH", "blocking": False}],
-    "meta": {}
+   'event_id': 't5',
+   'intents': [{'type': 'GET_BALANCE', 'confidence': 0.4}],
+   'entities': {},
+   'actions': [{'action_type': 'FETCH_BALANCE', 'priority': 'HIGH', 'blocking': True}],
+   'meta': {'source': 'rule_based', 'processed_at': '2026-04-01T10:04:00'}
 }
 
 # No action required
 data5 = {
-    "event_id": "5",
-    "intents": [{"type": "UNKNOWN_INTENT", "confidence": 0.9}],
-    "entities": {},
-    "actions": [{"action_type": "FETCH_BALANCE", "priority": "HIGH", "blocking": True}],
-    "meta": {}
+   'event_id': 't6',
+   'intents': [{'type': 'GET_BALANCE', 'confidence': 0.7}],
+   'entities': {},
+   'actions': [{'action_type': 'FETCH_BALANCE', 'priority': 'HIGH', 'blocking': True}],
+   'meta': {'source': 'rule_based', 'processed_at': '2026-04-01T10:05:00'}
 }
 
 print("Test 1:", process_request(data1))

@@ -1,46 +1,41 @@
 # router.py
 
 def route_action(data):
-    intent = data.get("intent")
-    action_type = data.get("action_type")
+    intent = data["intents"][0]["type"]
+    action_type = data["actions"][0]["action_type"]
 
-    # READ actions
-    if action_type == "READ":
-        return handle_read(intent, data)
+    if action_type == "FETCH_BALANCE":
+        return handle_read("GET_BALANCE", data)
 
-    # BLOCK actions
-    elif action_type == "BLOCK":
-        return handle_block(intent, data)
+    elif action_type == "FETCH_BANK_STATEMENT":
+        return handle_read("GET_STATEMENT", data)
 
-    # UPDATE actions (future use)
-    elif action_type == "UPDATE":
-        return handle_update(intent, data)
+    elif action_type == "FETCH_TRANSACTIONS":
+        return handle_read("LAST_TRANSACTIONS", data)
 
     else:
-        return {"status": "error", "message": "Unknown action type"}
+        return {"status": "error", "message": "Unknown READ action"}
 
-
-# -------- HANDLERS -------- #
 
 def handle_read(intent, data):
     if intent == "GET_BALANCE":
-        return {"operation": "GET_BALANCE", "message": "Fetching account balance"}
+        return {
+            "operation": "GET_BALANCE",
+            "message": "Fetching account balance"
+        }
 
     elif intent == "GET_STATEMENT":
-        return {"operation": "GET_STATEMENT", "message": "Fetching account statement"}
+        duration = data.get("entities", {}).get("duration")
+
+        return {
+            "operation": "GET_STATEMENT",
+            "message": f"Fetching statement for {duration['value']} {duration['unit']}" if duration else "Fetching statement"
+        }
 
     elif intent == "LAST_TRANSACTIONS":
-        return {"operation": "LAST_TRANSACTIONS", "message": "Fetching last transactions"}
+        return {
+            "operation": "LAST_TRANSACTIONS",
+            "message": "Fetching last transactions"
+        }
 
     return {"status": "error", "message": "Invalid READ intent"}
-
-
-def handle_block(intent, data):
-    if intent == "BLOCK_CARD":
-        return {"operation": "BLOCK_CARD", "message": "Blocking card"}
-
-    return {"status": "error", "message": "Invalid BLOCK intent"}
-
-
-def handle_update(intent, data):
-    return {"operation": "UPDATE", "message": "Update operation"}
